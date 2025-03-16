@@ -1,6 +1,6 @@
 import React from 'react';
-import './MainHeader.css';
 import Navigation from './Navigation';
+import './MainHeader.css';
 
 const MainHeader = (props) => {
   return (

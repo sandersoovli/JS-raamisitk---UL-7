@@ -41,3 +41,7 @@
 .actions {
   text-align: center;
 }
+.invalid input {
+  border-color: red;
+  background-color: #f8d7da;
+}
