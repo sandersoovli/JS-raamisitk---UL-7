@@ -1,28 +1,32 @@
-import React, { Fragment } from 'react';
-import MainHeader from './components/MainHeader/MainHeader.js'; // Corrected import path
-import Login from './components/Login/Login.js';
+import React, { useState } from 'react';
+import MainHeader from './components/MainHeader/MainHeader';
+import Login from './components/Login/Login';
+import Home from './components/Home/Home';
 
 function App() {
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  const loginHandler = (user, password) => {
+    localStorage.setItem('isLoggedUser', JSON.stringify({
+      username: user,
+      isLogged: true
+    }));
+    setLoggedIn(true);
+  };
+
+  const logoutHandler = () => {
+    localStorage.removeItem('isLoggedUser');
+    setLoggedIn(false);
+  };
+
   return (
-    <div className="App">
-      <Fragment>
-        <MainHeader />
-        <header className="App-header">
-          
-          <main>
-            <Login />
-          </main>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </Fragment>
-    </div>
+    <React.Fragment>
+      <MainHeader isAuthenticated={loggedIn} onLogout={logoutHandler} />
+      <main>
+        {!loggedIn && <Login onLogin={loginHandler} />}
+        {loggedIn && <Home />}
+      </main>
+    </React.Fragment>
   );
 }
 
