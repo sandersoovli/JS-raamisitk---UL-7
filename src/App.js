@@ -2,53 +2,64 @@ import React, { useState, useEffect } from 'react';
 import MainHeader from './components/MainHeader/MainHeader';
 import Login from './components/Login/Login';
 import Home from './components/Home/Home';
+import AuthContext from './store/auth-context';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
 
-  // Check localStorage when the component is mounted to restore the login state
   useEffect(() => {
-    const storedUser = localStorage.getItem('isLoggedUser');
-    if (storedUser) {
-      const userData = JSON.parse(storedUser);
-      setLoggedIn(userData.isLogged);
+    try {
+      const storedUser = localStorage.getItem('isLoggedUser');
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        setLoggedIn(userData.isLogged);
+      }
+    } catch (error) {
+      console.error('Error restoring login state:', error);
+      // Handle error (e.g., show an error message)
     }
   }, []);
 
-  // Handler for login
   const loginHandler = (user, password) => {
-    // Make sure username and password are valid
     if (user && password && password.length > 6) {
-      // Save the login status in localStorage
-      localStorage.setItem('isLoggedUser', JSON.stringify({
-        username: user,
-        isLogged: true
-      }));
-      setLoggedIn(true);
+      try {
+        localStorage.setItem('isLoggedUser', JSON.stringify({
+          userEmail: user,
+          isLogged: true,
+        }));
+        setLoggedIn(true);
+      } catch (error) {
+        console.error('Error saving login data:', error);
+        alert('Login failed. Please try again.');
+        // Handle error (e.g., show an error message)
+      }
     } else {
-      alert("Invalid credentials, please try again.");
+      alert('Invalid email or password. Password must be at least 7 characters.');
     }
   };
 
-  // Handler for logout
   const logoutHandler = () => {
-    // Remove user data from localStorage and log the user out
-    localStorage.removeItem('isLoggedUser');
-    setLoggedIn(false);
+    try {
+      localStorage.removeItem('isLoggedUser');
+      setLoggedIn(false);
+    } catch (error) {
+      console.error('Error logging out:', error);
+      // Handle error
+    }
   };
 
   return (
-    <React.Fragment>
-      <MainHeader isAuthenticated={loggedIn} onLogout={logoutHandler} />
-      
-      <main>
-        {/* Show Login if user is not logged in */}
-        {!loggedIn && <Login onLogin={loginHandler} />}
-        
-        {/* Show Home if user is logged in */}
-        {loggedIn && <Home />}
-      </main>
-    </React.Fragment>
+    <AuthContext.Provider
+      value={{ isLoggedIn: loggedIn, onLogout: logoutHandler }}
+    >
+      <React.Fragment>
+        <MainHeader isAuthenticated={loggedIn} onLogout={logoutHandler} />
+        <main>
+          {!loggedIn && <Login onLogin={loginHandler} />}
+          {loggedIn && <Home />}
+        </main>
+      </React.Fragment>
+    </AuthContext.Provider>
   );
 }
 

@@ -29,7 +29,7 @@ const passwordReducer = (state, action) => {
   return { value: '', isValid: false };
 };
 
-const Login = () => {
+const Login = (props) => { // Add props as parameter
   const [emailState, dispatchEmail] = useReducer(emailReducer, {
     value: '',
     isValid: null,
@@ -81,8 +81,7 @@ const Login = () => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    console.log('Email:', emailState.value);
-    console.log('Password:', passwordState.value);
+    props.onLogin(emailState.value, passwordState.value); // Call onLogin with email and password
   };
 
   return (
